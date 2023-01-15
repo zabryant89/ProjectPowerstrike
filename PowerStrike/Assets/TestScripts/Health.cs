@@ -14,6 +14,7 @@ public class Health : MonoBehaviour
 
     //DoTs and HoTs
     //DID NOT LIKE the original idea.  Going to implement something new.  See devlog
+    //moved to StatusEffects script
 
     // Start is called before the first frame update
     void Start()
@@ -44,16 +45,5 @@ public class Health : MonoBehaviour
         //no negative values allowed
         if (current < 0)
             current = 0;
-    }
-
-    /*how to use:
-     * pass negative values to damage
-     * pass positive values to heal
-     * tick is the count for how many times it will trigger
-     * time is the interval between each tick
-     */
-    public void ChangeHealthOverTime(float t, int i, int val)
-    {
-        
     }
 }
