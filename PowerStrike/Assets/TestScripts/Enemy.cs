@@ -12,9 +12,13 @@ public class Enemy : MonoBehaviour
     private bool acting; //need this for NPC's to handle their turn timers
     public Timer clock; //check/manipulate the timer as needed
 
+    public int maxHP;
+    public Health hp;
+
     // Start is called before the first frame update
     void Start()
     {
+        hp.SetMaxHP(maxHP);
         turnTime = baseTime;
         turn = false;
         acting = false;
@@ -46,8 +50,16 @@ public class Enemy : MonoBehaviour
         turn = false;
         yield return new WaitForSeconds(2f);
         acting = false;
+        BasicAttack();
         clock.SetNPCBlock(false);
         clock.ContGame();
         Debug.Log("End ENEMY turn");
+    }
+
+    private void BasicAttack()
+    {
+        GameObject player = GameObject.Find("Player");
+        Health playerHP = player.GetComponent<Health>();
+        playerHP.ChangeHealth(-8);
     }
 }

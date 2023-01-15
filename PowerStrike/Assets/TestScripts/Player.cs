@@ -12,15 +12,17 @@ public class Player : MonoBehaviour
     private bool turn; //is it the player's turn? (used to determine if actions can be taken or not)
     public Timer clock; //just to track global game timer!
 
-    //next: player HP (curr/max)
+    //next: player HP (curr/max) (@@@will need to remove later)
     public int maxHP; //max HP for the player
-    private int currHP; //current player HP
-    public TextMeshProUGUI dispHP; //used for the HP display
+    public Health hp;
+    /*private int currHP; //current player HP
+    public TextMeshProUGUI dispHP; //used for the HP display*/
+
 
     /*next: all player's stats
      * Brawn - physical strength
      * Agility - physical agility
-     * Vigor - physical durability
+     * Vigor - durability
      * Mind - magical ability
      */
     public int brawn;
@@ -32,16 +34,15 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        hp.SetMaxHP(maxHP);
         turn = false;
         turnTime = turnBase;
-        currHP = maxHP;
-        dispHP.text = string.Format("{0} / {1}", currHP, maxHP);
     }
 
     // Update is called once per frame
     void Update()
     {
-        dispHP.text = string.Format("{0} / {1}", currHP, maxHP);
+        //dispHP.text = string.Format("{0} / {1}", currHP, maxHP);
         if (clock.GetTime() >= turnTime && !clock.GetNPCBlock())
         {
             Debug.Log("Begin PLAYER turn");
@@ -51,10 +52,15 @@ public class Player : MonoBehaviour
             turn = true;
         }
 
-        if (turn && Input.GetKey(KeyCode.W))
+        if (turn && Input.GetKey(KeyCode.A))
         {
             turn = false;
-            EndTurn();
+            BasicAttack();
+        }
+        else if (turn && Input.GetKey(KeyCode.W))
+        {
+            turn = false;
+            Bleed();
         }
     }
 
@@ -65,5 +71,21 @@ public class Player : MonoBehaviour
         clock.ContGame();
         //currHP -= 1;
         Debug.Log("End PLAYER turn");
+    }
+
+    private void BasicAttack()
+    {
+        GameObject enemy = GameObject.Find("Enemy");
+        Health enemyHP = enemy.GetComponent<Health>();
+        enemyHP.ChangeHealth(-8);
+        EndTurn();
+    }
+
+    private void Bleed()
+    {
+        /*GameObject enemy = GameObject.Find("Enemy");
+        Health enemyHP = enemy.GetComponent<Health>();
+        enemyHP.ChangeHealthOverTime(2f, 4, 5);
+        EndTurn();*/
     }
 }
