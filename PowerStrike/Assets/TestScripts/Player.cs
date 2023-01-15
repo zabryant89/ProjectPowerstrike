@@ -42,25 +42,28 @@ public class Player : MonoBehaviour
     void Update()
     {
         dispHP.text = string.Format("{0} / {1}", currHP, maxHP);
-        if (clock.GetTime() >= turnTime)
+        if (clock.GetTime() >= turnTime && !clock.GetNPCBlock())
         {
-            clock.PauseGame();
             Debug.Log("Begin PLAYER turn");
+            clock.SetPlayerBlock(true);
+            clock.PauseGame();
+            turnTime = turnBase + clock.GetTime();
             turn = true;
         }
 
         if (turn && Input.GetKey(KeyCode.W))
         {
-            turnTime = turnBase + clock.GetTime();
-            clock.ContGame();
-            //currHP -= 1;
             turn = false;
-            Debug.Log("End PLAYER turn");
+            EndTurn();
         }
     }
 
     public void EndTurn()
     {
-
+        while (clock.GetNPCBlock()) ;
+        clock.SetPlayerBlock(false);
+        clock.ContGame();
+        //currHP -= 1;
+        Debug.Log("End PLAYER turn");
     }
 }

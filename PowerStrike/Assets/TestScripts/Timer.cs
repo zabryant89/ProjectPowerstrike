@@ -10,6 +10,8 @@ public class Timer : MonoBehaviour
     private float curTime;
     private bool paused;
     public TextMeshProUGUI timerText;
+    private bool playerBlock; //blocks npc from affecting timer
+    private bool npcBlock; //blocks player from affecting timer
 
     
     // Start is called before the first frame update
@@ -54,5 +56,25 @@ public class Timer : MonoBehaviour
     public float GetTime()
     {
         return curTime;
+    }
+
+    public void SetPlayerBlock(bool val)
+    {
+        playerBlock = val;
+    }
+
+    public void SetNPCBlock(bool val)
+    {
+        npcBlock = val;
+    }
+
+    public bool GetPlayerBlock()
+    {
+        return playerBlock;
+    }
+
+    public bool GetNPCBlock()
+    {
+        return npcBlock;
     }
 }

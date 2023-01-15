@@ -23,10 +23,12 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (clock.GetTime() >= turnTime && !acting)
+        if (clock.GetTime() >= turnTime && !acting && !clock.GetPlayerBlock())
         {
-            turn = true;
+            clock.SetNPCBlock(true);
             clock.PauseGame();
+            turn = true;
+            turnTime = baseTime + clock.GetTime();
         }
 
         if (turn)
@@ -38,13 +40,14 @@ public class Enemy : MonoBehaviour
     //temporary actions
     public IEnumerator Act()
     {
+        while (clock.GetPlayerBlock()) ;
         Debug.Log("Begin ENEMY turn");
         acting = true;
         turn = false;
         yield return new WaitForSeconds(2f);
         acting = false;
+        clock.SetNPCBlock(false);
         clock.ContGame();
-        turnTime = baseTime + clock.GetTime();
         Debug.Log("End ENEMY turn");
     }
 }
