@@ -301,6 +301,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83c82e89004ca9c4091bc97a3437c9db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseTime: 2.5
+  clock: {fileID: 277157878}
 --- !u!212 &451838418
 SpriteRenderer:
   m_ObjectHideFlags: 0

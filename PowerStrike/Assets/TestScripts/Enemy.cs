@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
     public float baseTime; //turn interval
     private float turnTime; //when the timer needs to pause for enemy turn
     private bool turn; //is it this character's turn?
+    private bool acting; //need this for NPC's to handle their turn timers
     public Timer clock; //check/manipulate the timer as needed
 
     // Start is called before the first frame update
@@ -16,29 +17,34 @@ public class Enemy : MonoBehaviour
     {
         turnTime = baseTime;
         turn = false;
+        acting = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (clock.GetTime() >= turnTime)
+        if (clock.GetTime() >= turnTime && !acting)
         {
             turn = true;
             clock.PauseGame();
-            turnTime = baseTime + clock.GetTime();
         }
 
-        if (turn == true)
+        if (turn)
         {
-            Act();
+            StartCoroutine(Act());
         }
     }
 
     //temporary actions
-    public void Act()
+    public IEnumerator Act()
     {
-        
+        Debug.Log("Begin ENEMY turn");
+        acting = true;
+        turn = false;
+        yield return new WaitForSeconds(2f);
+        acting = false;
+        clock.ContGame();
+        turnTime = baseTime + clock.GetTime();
+        Debug.Log("End ENEMY turn");
     }
-
-    public I
 }

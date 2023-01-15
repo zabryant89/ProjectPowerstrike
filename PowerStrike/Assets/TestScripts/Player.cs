@@ -45,15 +45,22 @@ public class Player : MonoBehaviour
         if (clock.GetTime() >= turnTime)
         {
             clock.PauseGame();
+            Debug.Log("Begin PLAYER turn");
             turn = true;
         }
 
-        if (turn == true && Input.GetKey(KeyCode.W))
+        if (turn && Input.GetKey(KeyCode.W))
         {
             turnTime = turnBase + clock.GetTime();
             clock.ContGame();
             //currHP -= 1;
             turn = false;
+            Debug.Log("End PLAYER turn");
         }
+    }
+
+    public void EndTurn()
+    {
+
     }
 }

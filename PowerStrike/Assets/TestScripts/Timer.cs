@@ -24,7 +24,7 @@ public class Timer : MonoBehaviour
     void Update()
     {
         //pause check, if false: continue the timer
-        if (paused == false)
+        if (!paused)
         {
             timerText.text = string.Format("{0:0.00}", curTime);
             curTime += Time.deltaTime;
