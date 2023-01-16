@@ -32,13 +32,13 @@ public class Timer : MonoBehaviour
             curTime += Time.deltaTime;
         }
 
-        if (Input.GetKey(KeyCode.A)){
+        /*if (Input.GetKey(KeyCode.A)){
             PauseGame();
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
             ContGame();
-        }
+        }*/
     }
 
     //can do one method for the pausing/unpausing, however for now I want direct control.
@@ -49,6 +49,7 @@ public class Timer : MonoBehaviour
 
     public void ContGame()
     {
+        //while (playerBlock || npcBlock) ;
         paused = false;
     }
 

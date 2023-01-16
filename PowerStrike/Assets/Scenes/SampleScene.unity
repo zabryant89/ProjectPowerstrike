@@ -283,6 +283,7 @@ GameObject:
   - component: {fileID: 451838418}
   - component: {fileID: 451838417}
   - component: {fileID: 451838420}
+  - component: {fileID: 451838421}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -384,6 +385,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dispHP: {fileID: 862816386}
+--- !u!114 &451838421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 451838416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c892c0d3c6ec010479f1312887b8ecd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   clock: {fileID: 277157878}
 --- !u!1 &519420028
 GameObject:
@@ -955,7 +968,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dispHP: {fileID: 1138301109}
-  clock: {fileID: 277157878}
 --- !u!1 &2042941956
 GameObject:
   m_ObjectHideFlags: 0

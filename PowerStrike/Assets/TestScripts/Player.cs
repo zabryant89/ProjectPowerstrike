@@ -37,43 +37,56 @@ public class Player : MonoBehaviour
         hp.SetMaxHP(maxHP);
         turn = false;
         turnTime = turnBase;
+        StartCoroutine(Wait(turnBase));
     }
 
     // Update is called once per frame
     void Update()
     {
         //dispHP.text = string.Format("{0} / {1}", currHP, maxHP);
-        if (clock.GetTime() >= turnTime && !clock.GetNPCBlock())
+        /*if (clock.GetTime() >= turnTime && !clock.GetNPCBlock())
         {
             Debug.Log("Begin PLAYER turn");
             clock.SetPlayerBlock(true);
             clock.PauseGame();
             turnTime = turnBase + clock.GetTime();
             turn = true;
-        }
+        }*/
 
         if (turn && Input.GetKey(KeyCode.A))
         {
             turn = false;
-            BasicAttack();
+            EndTurn();
         }
-        else if (turn && Input.GetKey(KeyCode.W))
+        /*else if (turn && Input.GetKey(KeyCode.W))
         {
             turn = false;
-            Bleed();
-        }
+            //Burn();
+        }*/
+    }
+
+    //wait for turn (taking off update for performance)
+    private IEnumerator Wait(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        while (clock.GetTime() < turnTime) ;
+        while (clock.GetNPCBlock()) ;
+
+        clock.SetPlayerBlock(true);
+        clock.PauseGame();
+        turn = true;
     }
 
     public void EndTurn()
     {
-        while (clock.GetNPCBlock()) ;
         clock.SetPlayerBlock(false);
         clock.ContGame();
         //currHP -= 1;
         Debug.Log("End PLAYER turn");
     }
 
-    private void BasicAttack()
+    /*private void BasicAttack()
     {
         GameObject enemy = GameObject.Find("Enemy");
         Health enemyHP = enemy.GetComponent<Health>();
@@ -81,11 +94,11 @@ public class Player : MonoBehaviour
         EndTurn();
     }
 
-    private void Bleed()
+    private void Burn()
     {
-        /*GameObject enemy = GameObject.Find("Enemy");
-        Health enemyHP = enemy.GetComponent<Health>();
-        enemyHP.ChangeHealthOverTime(2f, 4, 5);
-        EndTurn();*/
-    }
+        GameObject enemy = GameObject.Find("Enemy");
+        StatusEffects enemyHP = enemy.GetComponent<StatusEffects>();
+        enemyHP.ApplyBurn(5);
+        EndTurn();
+    }*/
 }

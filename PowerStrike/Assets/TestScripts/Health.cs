@@ -26,6 +26,8 @@ public class Health : MonoBehaviour
     void Update()
     {
         dispHP.text = string.Format("{0} / {1}", current, max);
+        if (current > max)
+            current = max;
     }
 
     //this is for initial setting of maxhp only!
@@ -33,6 +35,11 @@ public class Health : MonoBehaviour
     {
         max = val;
         current += val; 
+    }
+
+    public int GetMaxHealth()
+    {
+        return max;
     }
 
     /*how to use:

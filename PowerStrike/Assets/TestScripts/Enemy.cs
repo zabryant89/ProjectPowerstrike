@@ -22,23 +22,38 @@ public class Enemy : MonoBehaviour
         turnTime = baseTime;
         turn = false;
         acting = false;
+        StartCoroutine(Wait(baseTime));
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (clock.GetTime() >= turnTime && !acting && !clock.GetPlayerBlock())
+        /*if (clock.GetTime() >= turnTime && !acting && !clock.GetPlayerBlock())
         {
             clock.SetNPCBlock(true);
             clock.PauseGame();
             turn = true;
             turnTime = baseTime + clock.GetTime();
-        }
+        }*/
 
-        if (turn)
+        /*if (turn)
         {
             StartCoroutine(Act());
-        }
+        }*/
+    }
+
+    private IEnumerator Wait(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        while (clock.GetTime() < turnTime) ;
+        while (clock.GetPlayerBlock()) ;
+
+        clock.SetNPCBlock(true);
+        clock.PauseGame();
+        //turn = true;
+        turnTime = baseTime + clock.GetTime();
+        StartCoroutine(Act());
     }
 
     //temporary actions
@@ -46,10 +61,10 @@ public class Enemy : MonoBehaviour
     {
         while (clock.GetPlayerBlock()) ;
         Debug.Log("Begin ENEMY turn");
-        acting = true;
-        turn = false;
+        //acting = true;
+        //turn = false;
         yield return new WaitForSeconds(2f);
-        acting = false;
+        //acting = false;
         BasicAttack();
         clock.SetNPCBlock(false);
         clock.ContGame();
