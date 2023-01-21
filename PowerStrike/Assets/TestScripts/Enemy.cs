@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator Wait(float time)
     {
-        yield return new WaitForSeconds(time);
+        /*yield return new WaitForSeconds(time);
 
         while (clock.GetTime() < turnTime) ;
         while (clock.GetPlayerBlock()) ;
@@ -53,13 +53,14 @@ public class Enemy : MonoBehaviour
         clock.PauseGame();
         //turn = true;
         turnTime = baseTime + clock.GetTime();
-        StartCoroutine(Act());
+        StartCoroutine(Act());*/
+        yield return new WaitForSeconds(0f);
     }
 
     //temporary actions
     public IEnumerator Act()
     {
-        while (clock.GetPlayerBlock()) ;
+        /*while (clock.GetPlayerBlock()) ;
         Debug.Log("Begin ENEMY turn");
         //acting = true;
         //turn = false;
@@ -68,13 +69,14 @@ public class Enemy : MonoBehaviour
         BasicAttack();
         clock.SetNPCBlock(false);
         clock.ContGame();
-        Debug.Log("End ENEMY turn");
+        Debug.Log("End ENEMY turn");*/
+        yield return new WaitForSeconds(0f);
     }
 
     private void BasicAttack()
     {
-        GameObject player = GameObject.Find("Player");
+        /*GameObject player = GameObject.Find("Player");
         Health playerHP = player.GetComponent<Health>();
-        playerHP.ChangeHealth(-8);
+        playerHP.ChangeHealth(-8);*/
     }
 }

@@ -55,7 +55,6 @@ public class Player : MonoBehaviour
 
         if (turn && Input.GetKey(KeyCode.A))
         {
-            turn = false;
             EndTurn();
         }
         /*else if (turn && Input.GetKey(KeyCode.W))
@@ -73,6 +72,7 @@ public class Player : MonoBehaviour
         while (clock.GetTime() < turnTime) ;
         while (clock.GetNPCBlock()) ;
 
+        turnTime = clock.GetTime() + turnBase + 10; //10 is hardcoded for testing.
         clock.SetPlayerBlock(true);
         clock.PauseGame();
         turn = true;
@@ -80,9 +80,11 @@ public class Player : MonoBehaviour
 
     public void EndTurn()
     {
+        turn = false;
         clock.SetPlayerBlock(false);
         clock.ContGame();
         //currHP -= 1;
+        StartCoroutine(Wait(turnBase));
         Debug.Log("End PLAYER turn");
     }
 
