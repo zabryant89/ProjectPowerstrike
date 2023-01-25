@@ -1,0 +1,38 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.Playables;
+
+public class TurnBasedSystem : MonoBehaviour
+{
+    public PlayableDirector timeline; // Assign the timeline in the Inspector
+
+    private bool isPaused = false;
+
+    void Start()
+    {
+        // Start the timeline
+        timeline.Play();
+    }
+
+    void Update()
+    {
+        if (isPaused)
+        {
+            // Do nothing while paused
+            return;
+        }
+
+        if (timeline.state == PlayState.Paused)
+        {
+            // Timeline is paused, so it's the end of a turn
+            isPaused = true;
+
+            // Perform turn-based logic here
+            // ...
+
+            // Resume the timeline for the next turn
+            timeline.Play();
+            isPaused = false;
+        }
+    }
+}

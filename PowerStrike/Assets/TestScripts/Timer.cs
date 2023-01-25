@@ -5,19 +5,25 @@ using TMPro;
 
 public class Timer : MonoBehaviour
 {
+    /* Design note
+     * Real time will never stop, will always run
+     * To simulate turn ticks, we will use a "timeline" system.
+     *      
+     */
     //need: current time, paused bool, textmeshpro object to change text on screen
 
     private float curTime;
+    private float futureTime;
     private bool paused;
     public TextMeshProUGUI timerText;
-    private bool playerBlock; //blocks npc from affecting timer
-    private bool npcBlock; //blocks player from affecting timer
+    
 
     
     // Start is called before the first frame update
     void Start()
     {
         curTime = 0f;
+        futureTime = curTime + 10f;
         paused = false;
         //timerText = this.GetComponent<TextMeshProUGUI>();
     }
@@ -28,17 +34,19 @@ public class Timer : MonoBehaviour
         //pause check, if false: continue the timer
         if (!paused)
         {
-            timerText.text = string.Format("{0:0.00}", curTime);
+            timerText.text = string.Format("{0:0.00}", curTime) + string.Format("    {0:0.00}", futureTime);
             curTime += Time.deltaTime;
+            futureTime = curTime + 10f;
         }
 
-        /*if (Input.GetKey(KeyCode.A)){
+        if (Input.GetKey(KeyCode.S))
+        {
             PauseGame();
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
             ContGame();
-        }*/
+        }
     }
 
     //can do one method for the pausing/unpausing, however for now I want direct control.
@@ -57,25 +65,5 @@ public class Timer : MonoBehaviour
     public float GetTime()
     {
         return curTime;
-    }
-
-    public void SetPlayerBlock(bool val)
-    {
-        playerBlock = val;
-    }
-
-    public void SetNPCBlock(bool val)
-    {
-        npcBlock = val;
-    }
-
-    public bool GetPlayerBlock()
-    {
-        return playerBlock;
-    }
-
-    public bool GetNPCBlock()
-    {
-        return npcBlock;
     }
 }
