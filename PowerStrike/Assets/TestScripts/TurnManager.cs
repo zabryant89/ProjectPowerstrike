@@ -6,31 +6,41 @@ public class TurnManager : MonoBehaviour
 {
     //created this script to deal with managing turns for each object
     //will save me a lot of repeated code.  Most of this is copy/paste from Player/Enemy scripts
-    public float turnInterval; //increment of turn timer
-    private float nextTurn; //actual time to pause for player's turn
+    private float turnInterval; //increment of turn timer
+    private float nextTurn; //actual time to pause for entity's turn
     private bool scheduled; //marks if the next turn has been scheduled or not, important for "turn alteration" effects!
-    private bool turn; //is it the player's turn? (used to determine if actions can be taken or not)
+    private bool turn; //is it the entity's turn? (used to determine if actions can be taken or not)
     public Timer clock; //just to track global game timer!
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        SetTurn(false);
+        scheduled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (clock.GetTime() >= nextTurn)
+        {
+            clock.PauseGame();
+            clock.SetTime(nextTurn);
+            SetTurn(true);
+        }
     }
 
-    private void SetTurn(bool val)
+    public void SetTurn(bool val)
     {
         turn = val;
-        clock.SetPlayer(val);
+
+        if (this.gameObject.name == "Player")
+            clock.SetPlayer(val);
+        else
+            clock.SetEnemy(val);
     }
 
-    //passing a value here as some things may 
+    //passing a value here as some things may change speed
     public void SetNextTurn(float next)
     {
         if (scheduled)
@@ -42,6 +52,11 @@ public class TurnManager : MonoBehaviour
             nextTurn += next;
             scheduled = true;
         }
+    }
+
+    public void SetTurnInt(float val)
+    {
+        turnInterval = val;
     }
 
     public bool GetTurn()

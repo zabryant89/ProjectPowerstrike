@@ -60,7 +60,8 @@ public class Timer : MonoBehaviour
     public void ContGame()
     {
         //while (playerBlock || npcBlock) ;
-        paused = false;
+        if (!player && !enemy)
+            paused = false;
     }
 
     public bool GetPause()

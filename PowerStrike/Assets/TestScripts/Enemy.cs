@@ -1,78 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
     //the following copy/paste from the player script... maybe should've made a "turn manager"
     public float turnInterval; //increment of turn timer
-    private float nextTurn; //actual time to pause for player's turn
-    private bool scheduled; //marks if the next turn has been scheduled or not, important for "turn alteration" effects!
-    private bool turn; //is it the player's turn? (used to determine if actions can be taken or not)
+    public Text temp; //just to "simulate" a turn for the opponent for now
+    private bool waiting; //used to ensure we don't call certain coroutines multiple times over
     public Timer clock; //just to track global game timer!
-    public Player player; //simply to check for turn boolean
+    private TurnManager turnManager; //to assign the turn manager for this entity
+    
+    //public Player player; //simply to check for turn boolean (old)
 
     // Start is called before the first frame update
     void Start()
     {
-        turn = false;
-        SetNextTurn(turnInterval);
-        scheduled = true;
+        turnManager = this.GetComponent<TurnManager>();
+        turnManager.SetTurnInt(turnInterval);
+        turnManager.SetNextTurn(turnInterval);
+        temp.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (clock.GetTime() >= nextTurn)
+        if (turnManager.GetTurn() && !waiting)
         {
-            clock.PauseGame();
-            clock.SetTime(nextTurn);
-            SetTurn(true);
-            scheduled = false;
-        }
-
-        if (turn)
-        {
-            StartCoroutine(TakeAction()); //temporary function
+            waiting = true;
+            StartCoroutine(SimulateTurn(4f));
         }
     }
 
-    private IEnumerator TakeAction()
+    //simulates the NPC turn
+    private IEnumerator SimulateTurn(float time)
     {
-        if (player.GetTurn())
-        {
-            StartCoroutine(WaitForPlayer());
-        }
-        else
-        {
-            yield return new WaitForSeconds(4f);
-            SetNextTurn(turnInterval);
-            SetTurn(false);
-            clock.ContGame();
-        }
-    }
-
-    private IEnumerator WaitForPlayer()
-    {
-        yield return new WaitForSeconds(5f);
-        StartCoroutine(TakeAction());
-    }
-
-    private void SetTurn(bool val)
-    {
-        turn = val;
-    }
-
-    public void SetNextTurn(float next)
-    {
-        if (scheduled)
-        {
-            nextTurn += next;
-        }
-        else
-        {
-            nextTurn += next;
-            scheduled = true;
-        }
+        temp.gameObject.SetActive(true);
+        yield return new WaitForSeconds(time);
+        waiting = false;
+        turnManager.SetNextTurn(turnInterval);
+        turnManager.SetTurn(false);
+        clock.ContGame();
+        temp.gameObject.SetActive(false);
     }
 }
