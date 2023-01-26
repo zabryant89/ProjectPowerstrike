@@ -15,6 +15,8 @@ public class Timer : MonoBehaviour
     private float curTime;
     private float futureTime;
     private bool paused;
+    private bool player;
+    private bool enemy;
     public TextMeshProUGUI timerText;
     
 
@@ -61,9 +63,32 @@ public class Timer : MonoBehaviour
         paused = false;
     }
 
+    public bool GetPause()
+    {
+        return paused;
+    }
+
     //for other scripts to access the current time
     public float GetTime()
     {
         return curTime;
+    }
+
+    //used to ensure proper turn scheduling
+    public void SetTime(float val)
+    {
+        curTime = val;
+        futureTime = val + 10f;
+        timerText.text = string.Format("{0:0.00}", curTime) + string.Format("    {0:0.00}", futureTime);
+    }
+
+    public void SetPlayer(bool val)
+    {
+        player = val;
+    }
+
+    public void SetEnemy(bool val)
+    {
+        enemy = val;
     }
 }
