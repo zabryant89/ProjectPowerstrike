@@ -9,6 +9,8 @@ public class Timer : MonoBehaviour
      * Real time will never stop, will always run
      * To simulate turn ticks, we will use a "timeline" system.
      *      
+     *      
+     * NOTE: to tackle simultaneous turns: ALL actions that are "instant" will occur 0.02ms AFTER they are selected!
      */
     //need: current time, paused bool, textmeshpro object to change text on screen
 

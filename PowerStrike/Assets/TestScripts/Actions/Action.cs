@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Action : MonoBehaviour
+public class Action : ScriptableObject
 {
     /* default class for an action
      * will schedule to the action queue
@@ -19,16 +19,24 @@ public class Action : MonoBehaviour
      * question: is there a need for Update or Start function?
      * answer: yes
      * reason: to identify the Timer script!
+     * 
+     * PROBLEM: simultaneous turns cause instant actions to occur when the entity selects them, can cause issues
+     * SOLUTION: add a 0.02 timer to them to ensure they occur quickly (near instant), but not to interfere with a simultaneous turn!
+     * 
+     * PROBLEM: simultaneous turns themselves... how should they be handled?
+     * SOLUTION: @@@ TBD
      */
 
     //some variables
     protected GameObject target; //target of the action
     protected float time; //duration of effect (0 = instant)
     protected Timer clock; //game timer 
+    protected ActionQueue queue; //action queue
 
-    private void Start()
+    void OnEnable()
     {
         clock = FindObjectOfType<Timer>();
+        queue = GameObject.Find("ActionQueue").GetComponent<ActionQueue>();
     }
 
     //assign target for instant ability

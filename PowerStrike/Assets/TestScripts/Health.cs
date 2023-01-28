@@ -1,17 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Health : MonoBehaviour
 {
     //basic health script to manage health... straightforward!
     private int current;
-    private int max;
+    public int max;
+    public TextMeshProUGUI display;
 
     // Start is called before the first frame update
     void Start()
     {
         current = max;
+        display.text = string.Format("{0} / {1}", current, max);
     }
 
     // Update is called once per frame
@@ -35,5 +38,7 @@ public class Health : MonoBehaviour
             current = 0;
             Destroy(this.gameObject);
         }
+
+        display.text = string.Format("{0} / {1}", current, max);
     }
 }

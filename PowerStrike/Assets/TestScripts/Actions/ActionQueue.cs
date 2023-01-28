@@ -13,11 +13,15 @@ public class ActionQueue : MonoBehaviour
     private void Start()
     {
         clock = FindObjectOfType<Timer>();
+        queue[0] = null;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //this MIGHT need to change - could be intensive on the computer to do this every single frame
+        //possible solution: take the earliest time of the next action, then trigger at that time.
+        //                      then take the array value as well, could speed things up a lot. for now... ignore
         if (queue[0] != null)
         {
             CheckActions();
@@ -37,7 +41,27 @@ public class ActionQueue : MonoBehaviour
             if (clock.GetTime() >= queue[i].GetTime())
             {
                 queue[i].DoAction();
+                Destroy(queue[i]);
             }
         }
+
+        OrganizeActions();
+    }
+
+    private void OrganizeActions()
+    {
+        int count = 0; //how much to decrement the tail.
+        //Action temp; //unecessary
+        for (int i = 0; i < tail - 1; i++)
+        {
+            if (queue[i] == null)
+            {
+                //temp = queue[i];
+                queue[i] = queue[i + 1];
+                queue[i + 1] = null;
+                count++;
+            }
+        }
+        tail -= count;
     }
 }
