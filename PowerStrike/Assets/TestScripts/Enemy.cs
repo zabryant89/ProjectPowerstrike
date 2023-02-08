@@ -59,9 +59,9 @@ public class Enemy : MonoBehaviour
         int decision;
 
         if (hp.GetCurrentHealth() >= hp.GetMaxHealth())
-            decision = Random.Range(0, 1);
+            decision = Random.Range(0, 2);
         else
-            decision = Random.Range(0, 1); //@@@ need to change back to 3
+            decision = Random.Range(0, 2); //@@@ need to change back to 4 
 
         switch (decision)
         {

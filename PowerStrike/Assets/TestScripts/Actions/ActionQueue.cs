@@ -78,4 +78,17 @@ public class ActionQueue : MonoBehaviour
             tail = count;
         }
     }
+
+    public int ReturnActionType<T>(T type, GameObject targ)
+    {
+        int count = 0;
+        if (queue.Length != 0)
+            for (int i = 0; i < queue.Length; i++)
+            {
+                if (queue[i].GetType() == type.GetType() && queue[i].GetTarget() == targ)
+                    count++;
+            }
+
+        return count;
+    }
 }

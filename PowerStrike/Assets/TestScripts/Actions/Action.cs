@@ -45,6 +45,12 @@ public class Action : ScriptableObject
         target = targ;
     }
 
+    //return target info (used for other things)
+    public GameObject GetTarget()
+    {
+        return target;
+    }
+
     //assign target for ability with some sort of timer
     public void AssignTarget(GameObject targ, float val)
     {
