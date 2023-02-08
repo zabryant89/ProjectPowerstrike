@@ -41,4 +41,14 @@ public class Health : MonoBehaviour
 
         display.text = string.Format("{0} / {1}", current, max);
     }
+
+    public int GetCurrentHealth()
+    {
+        return current;
+    }
+
+    public int GetMaxHealth()
+    {
+        return max;
+    }
 }

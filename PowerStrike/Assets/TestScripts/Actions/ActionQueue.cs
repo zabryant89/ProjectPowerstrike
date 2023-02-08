@@ -41,7 +41,7 @@ public class ActionQueue : MonoBehaviour
             if (clock.GetTime() >= queue[i].GetTime())
             {
                 queue[i].DoAction();
-                Destroy(queue[i]);
+                queue[i] = null; //I the problem is this tries to destroy too many times (previously was destroy)
             }
         }
 
@@ -59,9 +59,23 @@ public class ActionQueue : MonoBehaviour
                 //temp = queue[i];
                 queue[i] = queue[i + 1];
                 queue[i + 1] = null;
-                count++;
+                //count++;
             }
         }
-        tail -= count;
+
+        //properly find tail, this was the issue (FIXED DAMAGE BUG)
+        if (queue[0] == null)
+            tail = 0;
+        else
+        {
+            int i = 0;
+            while (i < queue.Length && queue[i] != null)
+            {
+                i++;
+                count++;
+            }
+
+            tail = count;
+        }
     }
 }

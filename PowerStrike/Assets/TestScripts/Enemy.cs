@@ -11,6 +11,12 @@ public class Enemy : MonoBehaviour
     private bool waiting; //used to ensure we don't call certain coroutines multiple times over
     public Timer clock; //just to track global game timer!
     private TurnManager turnManager; //to assign the turn manager for this entity
+
+    //damage and healing vars
+    private Damage basicAttack; //basic hit
+    private DamageOverTime dot; //damage over time
+    private Heal heal; //basic heal
+    private HealOverTime hot; //heal over time
     
     //public Player player; //simply to check for turn boolean (old)
 
@@ -29,19 +35,82 @@ public class Enemy : MonoBehaviour
         if (turnManager.GetTurn() && !waiting)
         {
             waiting = true;
-            StartCoroutine(SimulateTurn(4f));
+            StartCoroutine(DoTurn(4f));
         }
     }
 
     //simulates the NPC turn
-    private IEnumerator SimulateTurn(float time)
+    private void EndTurn()
     {
-        temp.gameObject.SetActive(true);
-        yield return new WaitForSeconds(time);
         waiting = false;
         turnManager.SetNextTurn(turnInterval);
         turnManager.SetTurn(false);
         clock.ContGame();
         temp.gameObject.SetActive(false);
+    }
+
+    private IEnumerator DoTurn(float time)
+    {
+        temp.gameObject.SetActive(true);
+        temp.text = "Thinking...";
+        yield return new WaitForSeconds(time);
+        
+        Health hp = this.GetComponent<Health>();
+        int decision;
+
+        if (hp.GetCurrentHealth() >= hp.GetMaxHealth())
+            decision = Random.Range(0, 1);
+        else
+            decision = Random.Range(0, 1); //@@@ need to change back to 3
+
+        switch (decision)
+        {
+            case 0:
+                //damage one time
+                Attack(5, 0);
+                temp.text = "Decision made: attack";
+                break;
+            case 1:
+                //damage over time
+                temp.text = "Decision made: bleed";
+                DamageOverTime(3, 10, 0.75f);
+                break;
+            case 2:
+                //heal once
+                Heal(10, 0);
+                temp.text = "Decision made: heal";
+                break;
+            case 3:
+                //heal over time
+                HealOverTime(2, 5, 0.5f);
+                temp.text = "Decision made: heal over time";
+                break;
+        }
+        yield return new WaitForSeconds(time);
+        EndTurn();
+    }
+
+    private void Attack(int dmg, float interval)
+    {
+        basicAttack = ScriptableObject.CreateInstance<Damage>();
+        basicAttack.ScheduleDamage(dmg, interval, GameObject.Find("Player"));
+    }
+
+    private void DamageOverTime(int dmg, int ts, float interval)
+    {
+        dot = ScriptableObject.CreateInstance<DamageOverTime>();
+        dot.ScheduleDamage(dmg, ts, interval, GameObject.Find("Player"));
+    }
+
+    private void Heal(int amt, float interval)
+    {
+        heal = ScriptableObject.CreateInstance<Heal>();
+        heal.ScheduleHeal(amt, interval, this.gameObject);
+    }
+
+    private void HealOverTime(int amt, int ts, float interval)
+    {
+        hot = ScriptableObject.CreateInstance<HealOverTime>();
+        hot.ScheduleHeal(amt, ts, interval, this.gameObject);
     }
 }
