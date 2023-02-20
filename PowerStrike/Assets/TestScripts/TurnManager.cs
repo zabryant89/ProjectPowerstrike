@@ -13,6 +13,12 @@ public class TurnManager : MonoBehaviour
     private bool turn; //is it the entity's turn? (used to determine if actions can be taken or not)
     public Timer clock; //just to track global game timer!
 
+    //realizing now that turn manager needs to handle basic attacks.
+    //NOTE: must loop infinitely until combat ends, and freeze when stunned!
+    //Below are the basic attack globals:
+    private Player player;
+    private float nextSwing; //next basic attack swing
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +35,18 @@ public class TurnManager : MonoBehaviour
             clock.SetTime(nextTurn);
             SetTurn(true);
         }
+
+        if (this.gameObject.name == "Player" && clock.GetTime() >= nextSwing)
+        {
+            clock.PauseGame();
+            clock.SetTime(nextSwing);
+            StartCoroutine(BasicAttackDelay());
+        }
+    }
+
+    public void SetPlayer(Player play)
+    {
+        player = play;
     }
 
     public void SetTurn(bool val)
@@ -53,6 +71,22 @@ public class TurnManager : MonoBehaviour
             nextTurn += next;
             scheduled = true;
         }
+    }
+
+    //basic attack stuff:
+    public void SetBasicAttack(float next)
+    {
+        nextSwing += next;
+    }
+
+    private IEnumerator BasicAttackDelay()
+    {
+        //actual attack
+        player.BasicAttack();
+        //delay to show attack occurrence
+        yield return new WaitForSeconds(1.5f);
+        //continue the game
+        clock.ContGame();
     }
 
     public void SetTurnInt(float val)

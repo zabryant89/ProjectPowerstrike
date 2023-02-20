@@ -59,15 +59,16 @@ public class Enemy : MonoBehaviour
         int decision;
 
         if (hp.GetCurrentHealth() >= hp.GetMaxHealth())
-            decision = Random.Range(0, 2);
+            decision = 0; //Random.Range(0, 2)
         else
-            decision = Random.Range(0, 2); //@@@ need to change back to 4 
+            decision = 0; //@@@ need to change back to 4 
 
         switch (decision)
         {
             case 0:
                 //damage one time
                 Attack(5, 0);
+
                 temp.text = "Decision made: attack";
                 break;
             case 1:
@@ -94,6 +95,10 @@ public class Enemy : MonoBehaviour
     {
         basicAttack = ScriptableObject.CreateInstance<Damage>();
         basicAttack.ScheduleDamage(dmg, interval, GameObject.Find("Player"));
+        //the below commented out code block WORKS in stunning the target.
+        /*GameObject player = GameObject.Find("Player");
+        Player pl = player.GetComponent<Player>();
+        pl.StunMe(1.0f);*/
     }
 
     private void DamageOverTime(int dmg, int ts, float interval)

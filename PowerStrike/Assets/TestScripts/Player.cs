@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
 
     //action variables
     private Damage attack; //basic attack
+    private float basAtkInt; //basic attack interval - will be determined by weapon, but here for now!
     private DamageOverTime bleedAttack; //bleed attack
     private Heal heal; //healing
     private HealOverTime hot; //heal over time
@@ -24,7 +25,11 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        basAtkInt = 2.2f;
+
         turnManager = this.GetComponent<TurnManager>();
+        turnManager.SetBasicAttack(basAtkInt);
+        turnManager.SetPlayer(this);
         turnManager.SetTurnInt(turnInterval);
         turnManager.SetNextTurn(turnInterval);
 
@@ -60,6 +65,11 @@ public class Player : MonoBehaviour
             {
                 HealOverTime(5, 5, 0.5f, CalcSpeed(1, 1f));
             }
+
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                StunMe(1.0f);
+            }
         }
     }
 
@@ -83,12 +93,18 @@ public class Player : MonoBehaviour
         return final;
     }
 
-    private void Attack(int dmg, float interval, float nextTurn)
+    public void BasicAttack()
     {
         attack = ScriptableObject.CreateInstance<Damage>();
-        //basicAttack.AssignTarget(GameObject.Find("Enemy")); //derp... unecessary
+        attack.ScheduleDamage(power, 0, GameObject.Find("Enemy"));
+        turnManager.SetBasicAttack(basAtkInt);
+    }
+
+    private void Attack(int dmg, float interval, float nextTurn)
+    {
+
+        attack = ScriptableObject.CreateInstance<Damage>();
         attack.ScheduleDamage(dmg, interval, GameObject.Find("Enemy"));
-        //Destroy(basicAttack); //DO NOT DO THIS HERE, ruins the entry action queue
         EndTurn(nextTurn);
     }
 
@@ -111,6 +127,11 @@ public class Player : MonoBehaviour
         hot = ScriptableObject.CreateInstance<HealOverTime>();
         hot.ScheduleHeal(amt, ts, interval, this.gameObject);
         EndTurn(nextTurn);
+    }
+
+    public void StunMe(float stunTime)
+    {
+        turnManager.SetNextTurn(stunTime);
     }
 
     private void EndTurn(float next)
