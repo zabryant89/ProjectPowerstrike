@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : Character
 {
-    //the following copy/paste from the player script... maybe should've made a "turn manager"
+    /*//the following copy/paste from the player script... maybe should've made a "turn manager"
     public float turnInterval; //increment of turn timer
     public Text temp; //just to "simulate" a turn for the opponent for now
     private bool waiting; //used to ensure we don't call certain coroutines multiple times over
@@ -16,9 +16,13 @@ public class Enemy : MonoBehaviour
     private Damage basicAttack; //basic hit
     private DamageOverTime dot; //damage over time
     private Heal heal; //basic heal
-    private HealOverTime hot; //heal over time
-    
+    private HealOverTime hot; //heal over time*/
+
     //public Player player; //simply to check for turn boolean (old)
+
+    //enemy specific stuff, partly for debugging
+    public Text temp; //just to "simulate" a turn for the opponent for now
+    private bool waiting; //used to ensure we don't call certain coroutines multiple times over
 
     // Start is called before the first frame update
     void Start()
@@ -93,8 +97,8 @@ public class Enemy : MonoBehaviour
 
     private void Attack(int dmg, float interval)
     {
-        basicAttack = ScriptableObject.CreateInstance<Damage>();
-        basicAttack.ScheduleDamage(dmg, interval, GameObject.Find("Player"));
+        attack = ScriptableObject.CreateInstance<Damage>();
+        attack.ScheduleDamage(dmg, interval, GameObject.Find("Player"));
         //the below commented out code block WORKS in stunning the target.
         /*GameObject player = GameObject.Find("Player");
         Player pl = player.GetComponent<Player>();

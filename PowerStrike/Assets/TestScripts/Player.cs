@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class Player : MonoBehaviour
+public class Player : Character
 {
-    //need: player turn timer, pause the timer when turn is up, continue timer after player action.
+    /*//need: player turn timer, pause the timer when turn is up, continue timer after player action.
     //          Timer object to keep an eye on time!
     public float turnInterval; //increment of turn timer (baseline)
     public Timer clock; //just to track global game timer!
@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     private float basAtkInt; //basic attack interval - will be determined by weapon, but here for now!
     private DamageOverTime bleedAttack; //bleed attack
     private Heal heal; //healing
-    private HealOverTime hot; //heal over time
+    private HealOverTime hot; //heal over time*/
 
     //stats - affects damage/healing/etcs
     private int power; //damage modifier
@@ -110,8 +110,8 @@ public class Player : MonoBehaviour
 
     private void DamageOverTime(int dmgPer, int ts, float interval, float nextTurn)
     {
-        bleedAttack = ScriptableObject.CreateInstance<DamageOverTime>();
-        bleedAttack.ScheduleDamage(dmgPer, ts, interval, GameObject.Find("Enemy"));
+        dot = ScriptableObject.CreateInstance<DamageOverTime>();
+        dot.ScheduleDamage(dmgPer, ts, interval, GameObject.Find("Enemy"));
         EndTurn(nextTurn);
     }
 
@@ -132,6 +132,7 @@ public class Player : MonoBehaviour
     public void StunMe(float stunTime)
     {
         turnManager.SetNextTurn(stunTime);
+        turnManager.SetBasicAttack(stunTime);
     }
 
     private void EndTurn(float next)

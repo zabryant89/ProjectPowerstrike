@@ -993,8 +993,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnInterval: 2.5
-  temp: {fileID: 1057292437}
   clock: {fileID: 277157878}
+  temp: {fileID: 1057292437}
 --- !u!114 &702314457
 MonoBehaviour:
   m_ObjectHideFlags: 0
