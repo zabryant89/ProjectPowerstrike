@@ -5,19 +5,6 @@ using TMPro;
 
 public class Player : Character
 {
-    /*//need: player turn timer, pause the timer when turn is up, continue timer after player action.
-    //          Timer object to keep an eye on time!
-    public float turnInterval; //increment of turn timer (baseline)
-    public Timer clock; //just to track global game timer!
-    private TurnManager turnManager; //local turn manager script just for this object
-
-    //action variables
-    private Damage attack; //basic attack
-    private float basAtkInt; //basic attack interval - will be determined by weapon, but here for now!
-    private DamageOverTime bleedAttack; //bleed attack
-    private Heal heal; //healing
-    private HealOverTime hot; //heal over time*/
-
     //stats - affects damage/healing/etcs
     private int power; //damage modifier
 
@@ -29,7 +16,7 @@ public class Player : Character
 
         turnManager = this.GetComponent<TurnManager>();
         turnManager.SetBasicAttack(basAtkInt);
-        turnManager.SetPlayer(this);
+        turnManager.SetEntity(this);
         turnManager.SetTurnInt(turnInterval);
         turnManager.SetNextTurn(turnInterval);
 
@@ -48,12 +35,12 @@ public class Player : Character
 
             if (Input.GetKeyDown(KeyCode.A))
             {
-                Attack(CalcDamage(0, false), 0, CalcSpeed(1, turnInterval));
+                Attack(10, 0, CalcSpeed(1, turnInterval));
             }
 
             if (Input.GetKeyDown(KeyCode.B))
             {
-                DamageOverTime(CalcDamage(6, true), 5, 0.75f, CalcSpeed(1, 1f));
+                DamageOverTime(6, 5, 0.75f, CalcSpeed(0.5f, turnInterval));
             }
 
             if (Input.GetKeyDown(KeyCode.H))
@@ -63,29 +50,31 @@ public class Player : Character
 
             if (Input.GetKeyDown(KeyCode.J))
             {
-                HealOverTime(5, 5, 0.5f, CalcSpeed(1, 1f));
+                HealOverTime(5, 5, 0.5f, CalcSpeed(0.5f, turnInterval));
             }
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                StunMe(1.0f);
+                StunTarget(1f); //why no work in regular game but work in debug?
             }
         }
     }
 
     /* pass the base damage of the action and a bool if it is over time or not*/
-    private int CalcDamage(int baseline, bool overtime)
+    override protected int CalcDamage(int baseline, bool overtime, bool basic)
     {
         int final;
         if (overtime)
             final = baseline + power / 4; //over time effects will need less impact
-        else
+        else if (!basic)
             final = baseline + power; //normal attacks
+        else
+            final = baseline + (int)(power * (basAtkInt / 5)); //basic attack
         
         return final;
     }
 
-    private float CalcSpeed(float modifier, float abilitySpeed)
+    override protected float CalcSpeed(float modifier, float abilitySpeed)
     {
         float final;
         final = abilitySpeed * modifier; //use the ability's speed instead
@@ -93,14 +82,14 @@ public class Player : Character
         return final;
     }
 
-    public void BasicAttack()
+    override public void BasicAttack()
     {
         attack = ScriptableObject.CreateInstance<Damage>();
-        attack.ScheduleDamage(power, 0, GameObject.Find("Enemy"));
+        attack.ScheduleDamage(CalcDamage(power, false, true), 0, GameObject.Find("Enemy"));
         turnManager.SetBasicAttack(basAtkInt);
     }
 
-    private void Attack(int dmg, float interval, float nextTurn)
+    override protected void Attack(int dmg, float interval, float nextTurn)
     {
 
         attack = ScriptableObject.CreateInstance<Damage>();
@@ -108,34 +97,41 @@ public class Player : Character
         EndTurn(nextTurn);
     }
 
-    private void DamageOverTime(int dmgPer, int ts, float interval, float nextTurn)
+    override protected void DamageOverTime(int dmgPer, int ts, float interval, float nextTurn)
     {
         dot = ScriptableObject.CreateInstance<DamageOverTime>();
         dot.ScheduleDamage(dmgPer, ts, interval, GameObject.Find("Enemy"));
         EndTurn(nextTurn);
     }
 
-    private void Heal(int amt, float interval, float nextTurn)
+    override protected void Heal(int amt, float interval, float nextTurn)
     {
         heal = ScriptableObject.CreateInstance<Heal>();
         heal.ScheduleHeal(amt, interval, this.gameObject);
         EndTurn(nextTurn);
     }
 
-    private void HealOverTime(int amt, int ts, float interval, float nextTurn)
+    override protected void HealOverTime(int amt, int ts, float interval, float nextTurn)
     {
         hot = ScriptableObject.CreateInstance<HealOverTime>();
         hot.ScheduleHeal(amt, ts, interval, this.gameObject);
         EndTurn(nextTurn);
     }
 
-    public void StunMe(float stunTime)
+    override public void StunMe(float stunTime)
     {
         turnManager.SetNextTurn(stunTime);
         turnManager.SetBasicAttack(stunTime);
     }
 
-    private void EndTurn(float next)
+    private void StunTarget(float stunTime)
+    {
+        Enemy tmp = GameObject.Find("Enemy").GetComponent<Enemy>();
+        tmp.StunMe(stunTime);
+        EndTurn(turnInterval);
+    }
+
+    override protected void EndTurn(float next)
     {
         turnManager.SetNextTurn(next);
         turnManager.SetTurn(false);

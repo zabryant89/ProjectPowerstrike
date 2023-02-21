@@ -17,14 +17,14 @@ public class Action : ScriptableObject
      *      - Timer script object: track the game timer!
      *      
      * question: is there a need for Update or Start function?
-     * answer: yes
-     * reason: to identify the Timer script!
+     * answer: yes, but replace start with OnEnable
+     * reason: to identify the Timer script and to check the list for when an ability will fire off
      * 
      * PROBLEM: simultaneous turns cause instant actions to occur when the entity selects them, can cause issues
      * SOLUTION: add a 0.02 timer to them to ensure they occur quickly (near instant), but not to interfere with a simultaneous turn!
      * 
      * PROBLEM: simultaneous turns themselves... how should they be handled?
-     * SOLUTION: @@@ TBD
+     * SOLUTION: continue to utilize the formula above.  abilities will trigger simultaneously, and that's ok!
      */
 
     //some variables

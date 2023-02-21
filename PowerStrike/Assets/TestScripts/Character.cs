@@ -17,15 +17,22 @@ abstract public class Character : MonoBehaviour
     protected Heal heal; //healing
     protected HealOverTime hot; //heal over time
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    /* pass the base damage of the action and a bool if it is over time or not*/
+    abstract protected int CalcDamage(int baseline, bool overtime, bool basic);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    abstract protected float CalcSpeed(float modifier, float abilitySpeed);
+
+    abstract public void BasicAttack();
+
+    abstract protected void Attack(int dmg, float interval, float nextTurn);
+
+    abstract protected void DamageOverTime(int dmgPer, int ts, float interval, float nextTurn);
+
+    abstract protected void Heal(int amt, float interval, float nextTurn);
+
+    abstract protected void HealOverTime(int amt, int ts, float interval, float nextTurn);
+
+    abstract public void StunMe(float stunTime);
+
+    abstract protected void EndTurn(float next);
 }

@@ -42,7 +42,7 @@ public class DamageOverTime : Action
             //@@@ debugging: show bleed in the Status Effect box
             TextMeshProUGUI text = GameObject.Find("StatusEffects").GetComponent<TextMeshProUGUI>();
 
-            text.text = string.Format("DoT's: {0}", queue.ReturnActionType(this.GetType(), target));
+            //text.text = string.Format("DoT's: {0}", queue.ReturnActionType(this.GetType(), target));
             
 
             //call schedule damage again - pass self parameters

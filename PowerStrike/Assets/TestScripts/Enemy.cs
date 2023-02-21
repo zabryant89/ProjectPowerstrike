@@ -5,32 +5,28 @@ using UnityEngine.UI;
 
 public class Enemy : Character
 {
-    /*//the following copy/paste from the player script... maybe should've made a "turn manager"
-    public float turnInterval; //increment of turn timer
-    public Text temp; //just to "simulate" a turn for the opponent for now
-    private bool waiting; //used to ensure we don't call certain coroutines multiple times over
-    public Timer clock; //just to track global game timer!
-    private TurnManager turnManager; //to assign the turn manager for this entity
-
-    //damage and healing vars
-    private Damage basicAttack; //basic hit
-    private DamageOverTime dot; //damage over time
-    private Heal heal; //basic heal
-    private HealOverTime hot; //heal over time*/
-
     //public Player player; //simply to check for turn boolean (old)
 
     //enemy specific stuff, partly for debugging
     public Text temp; //just to "simulate" a turn for the opponent for now
     private bool waiting; //used to ensure we don't call certain coroutines multiple times over
 
+    //stats
+    private int power; //damage modifier
+
     // Start is called before the first frame update
     void Start()
     {
+        basAtkInt = 1.8f;
+
         turnManager = this.GetComponent<TurnManager>();
+        turnManager.SetBasicAttack(basAtkInt);
+        turnManager.SetEntity(this);
         turnManager.SetTurnInt(turnInterval);
         turnManager.SetNextTurn(turnInterval);
         temp.gameObject.SetActive(false);
+
+        power = 10;
     }
 
     // Update is called once per frame
@@ -43,11 +39,39 @@ public class Enemy : Character
         }
     }
 
+    override protected int CalcDamage(int baseline, bool overtime, bool basic)
+    {
+        int final;
+        if (overtime)
+            final = baseline + power / 4; //overtime effects will need less impact
+        else if (!basic)
+            final = baseline + power; //normal attacks
+        else
+            final = baseline + (int)(power * (basAtkInt / 5)); //basic attack
+
+        return final;
+    }
+
+    override protected float CalcSpeed(float modifier, float abilitySpeed)
+    {
+        float final;
+        final = abilitySpeed * modifier; //use ability speed instead
+
+        return final;
+    }
+
+    override public void BasicAttack()
+    {
+        attack = ScriptableObject.CreateInstance<Damage>();
+        attack.ScheduleDamage(CalcDamage(power, false, true), 0, GameObject.Find("Player"));
+        turnManager.SetBasicAttack(basAtkInt);
+    }
+
     //simulates the NPC turn
-    private void EndTurn()
+    override protected void EndTurn(float next)
     {
         waiting = false;
-        turnManager.SetNextTurn(turnInterval);
+        turnManager.SetNextTurn(next);
         turnManager.SetTurn(false);
         clock.ContGame();
         temp.gameObject.SetActive(false);
@@ -58,44 +82,51 @@ public class Enemy : Character
         temp.gameObject.SetActive(true);
         temp.text = "Thinking...";
         yield return new WaitForSeconds(time);
+
+        /*//debugging basic attacks for now:
+        EndTurn(turnInterval);*/
         
+        //crappy "AI" implementation
         Health hp = this.GetComponent<Health>();
         int decision;
 
         if (hp.GetCurrentHealth() >= hp.GetMaxHealth())
-            decision = 0; //Random.Range(0, 2)
+            decision = Random.Range(0, 2);
+        else if (hp.GetCurrentHealth() > (int)(hp.GetMaxHealth() * 0.3))
+            decision = Random.Range(0, 4); //above 30% health, all options 
         else
-            decision = 0; //@@@ need to change back to 4 
+            decision = Random.Range(2, 4); //lower than 30%, heal only
 
         switch (decision)
         {
             case 0:
                 //damage one time
-                Attack(5, 0);
-
                 temp.text = "Decision made: attack";
+                yield return new WaitForSeconds(time);
+                Attack(10, 0, CalcSpeed(1f, turnInterval));
                 break;
             case 1:
                 //damage over time
                 temp.text = "Decision made: bleed";
-                DamageOverTime(3, 10, 0.75f);
+                yield return new WaitForSeconds(time);
+                DamageOverTime(CalcDamage(6, true, false), 10, 0.75f, CalcSpeed(0.5f, turnInterval));
                 break;
             case 2:
                 //heal once
-                Heal(10, 0);
                 temp.text = "Decision made: heal";
+                yield return new WaitForSeconds(time);
+                Heal(15, 0, CalcSpeed(1f, turnInterval));
                 break;
             case 3:
                 //heal over time
-                HealOverTime(2, 5, 0.5f);
                 temp.text = "Decision made: heal over time";
+                yield return new WaitForSeconds(time);
+                HealOverTime(5, 5, 0.5f, CalcSpeed(0.5f, turnInterval));
                 break;
         }
-        yield return new WaitForSeconds(time);
-        EndTurn();
     }
 
-    private void Attack(int dmg, float interval)
+    override protected void Attack(int dmg, float interval, float nextTurn)
     {
         attack = ScriptableObject.CreateInstance<Damage>();
         attack.ScheduleDamage(dmg, interval, GameObject.Find("Player"));
@@ -103,23 +134,33 @@ public class Enemy : Character
         /*GameObject player = GameObject.Find("Player");
         Player pl = player.GetComponent<Player>();
         pl.StunMe(1.0f);*/
+        EndTurn(nextTurn);
     }
 
-    private void DamageOverTime(int dmg, int ts, float interval)
+    override protected void DamageOverTime(int dmg, int ts, float interval, float nextTurn)
     {
         dot = ScriptableObject.CreateInstance<DamageOverTime>();
         dot.ScheduleDamage(dmg, ts, interval, GameObject.Find("Player"));
+        EndTurn(nextTurn);
     }
 
-    private void Heal(int amt, float interval)
+    override protected void Heal(int amt, float interval, float nextTurn)
     {
         heal = ScriptableObject.CreateInstance<Heal>();
         heal.ScheduleHeal(amt, interval, this.gameObject);
+        EndTurn(nextTurn);
     }
 
-    private void HealOverTime(int amt, int ts, float interval)
+    override protected void HealOverTime(int amt, int ts, float interval, float nextTurn)
     {
         hot = ScriptableObject.CreateInstance<HealOverTime>();
         hot.ScheduleHeal(amt, ts, interval, this.gameObject);
+        EndTurn(nextTurn);
+    }
+
+    public override void StunMe(float stunTime)
+    {
+        turnManager.SetNextTurn(stunTime);
+        turnManager.SetBasicAttack(stunTime);
     }
 }

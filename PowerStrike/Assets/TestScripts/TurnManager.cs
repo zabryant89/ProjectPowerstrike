@@ -16,7 +16,7 @@ public class TurnManager : MonoBehaviour
     //realizing now that turn manager needs to handle basic attacks.
     //NOTE: must loop infinitely until combat ends, and freeze when stunned!
     //Below are the basic attack globals:
-    private Player player;
+    private Character entity;
     private float nextSwing; //next basic attack swing
 
     // Start is called before the first frame update
@@ -36,7 +36,7 @@ public class TurnManager : MonoBehaviour
             SetTurn(true);
         }
 
-        if (this.gameObject.name == "Player" && clock.GetTime() >= nextSwing)
+        if (clock.GetTime() >= nextSwing)
         {
             clock.PauseGame();
             clock.SetTime(nextSwing);
@@ -44,9 +44,9 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    public void SetPlayer(Player play)
+    public void SetEntity(Character play)
     {
-        player = play;
+        entity = play;
     }
 
     public void SetTurn(bool val)
@@ -82,7 +82,7 @@ public class TurnManager : MonoBehaviour
     private IEnumerator BasicAttackDelay()
     {
         //actual attack
-        player.BasicAttack();
+        entity.BasicAttack();
         //delay to show attack occurrence
         yield return new WaitForSeconds(1.5f);
         //continue the game
