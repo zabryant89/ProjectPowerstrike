@@ -7,6 +7,7 @@ public class Player : Character
 {
     //stats - affects damage/healing/etcs
     private int power; //damage modifier
+    private Enemy target; // enemy target? might need I think
 
 
     // Start is called before the first frame update
@@ -124,12 +125,10 @@ public class Player : Character
         turnManager.SetBasicAttack(stunTime);
     }
 
-    private void StunTarget(float stunTime)
+    override protected void StunTarget(float stunTime)
     {
-        GameObject tmp = GameObject.Find("Enemy");
-        Enemy en = tmp.GetComponent<Enemy>();
-        en.StunMe(stunTime);
-        this.EndTurn(turnInterval);
+        GameObject targ = GameObject.Find("Enemy");
+        stun.ScheduleStun(stunTime, targ);
     }
 
     override protected void EndTurn(float next)

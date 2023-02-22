@@ -16,6 +16,7 @@ abstract public class Character : MonoBehaviour
     protected DamageOverTime dot; //bleed attack
     protected Heal heal; //healing
     protected HealOverTime hot; //heal over time
+    protected Stun stun; //to stun stuff
 
     /* pass the base damage of the action and a bool if it is over time or not*/
     abstract protected int CalcDamage(int baseline, bool overtime, bool basic);
@@ -33,6 +34,8 @@ abstract public class Character : MonoBehaviour
     abstract protected void HealOverTime(int amt, int ts, float interval, float nextTurn);
 
     abstract public void StunMe(float stunTime);
+
+    abstract protected void StunTarget(float stunTime);
 
     abstract protected void EndTurn(float next);
 }

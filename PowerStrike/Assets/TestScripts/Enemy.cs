@@ -163,4 +163,9 @@ public class Enemy : Character
         turnManager.SetNextTurn(stunTime);
         turnManager.SetBasicAttack(stunTime);
     }
+
+    protected override void StunTarget(float stunTime)
+    {
+        throw new System.NotImplementedException();
+    }
 }
