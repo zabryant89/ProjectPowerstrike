@@ -126,9 +126,10 @@ public class Player : Character
 
     private void StunTarget(float stunTime)
     {
-        Enemy tmp = GameObject.Find("Enemy").GetComponent<Enemy>();
-        tmp.StunMe(stunTime);
-        EndTurn(turnInterval);
+        GameObject tmp = GameObject.Find("Enemy");
+        Enemy en = tmp.GetComponent<Enemy>();
+        en.StunMe(stunTime);
+        this.EndTurn(turnInterval);
     }
 
     override protected void EndTurn(float next)
