@@ -6,8 +6,8 @@ public class ActionQueue : MonoBehaviour
 {
     //This script is to take in the actions to occur and properly time them!
 
-    private Action[] queue = new Action[10]; //use an array of scheduled actions
-    private int tail; //tail of the action queue (used to determine clean up of array!)
+    private Action[] queue = new Action[10]; //use an array of scheduled actions (will refactor to a List later down the line)
+    private int tail; //tail of the action queue (used to determine clean up of array!) - won't be necessary when converted to a List
     private Timer clock; //get the clock!
 
     private void Start()
@@ -41,7 +41,7 @@ public class ActionQueue : MonoBehaviour
             if (clock.GetTime() >= queue[i].GetTime())
             {
                 queue[i].DoAction();
-                queue[i] = null; //I the problem is this tries to destroy too many times (previously was destroy)
+                queue[i] = null; //the problem is this tries to destroy too many times (previously was destroy - now on the script to destroy itself)
             }
         }
 
@@ -79,6 +79,7 @@ public class ActionQueue : MonoBehaviour
         }
     }
 
+    //old code for debugging, ignore
     public int ReturnActionType<T>(T type, GameObject targ)
     {
         int count = 0;
