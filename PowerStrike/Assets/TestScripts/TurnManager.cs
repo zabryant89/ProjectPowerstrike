@@ -36,12 +36,13 @@ public class TurnManager : MonoBehaviour
             SetTurn(true);
         }
 
-        if (clock.GetTime() >= nextSwing)
+        //old basic attack logic
+        /*if (clock.GetTime() >= nextSwing)
         {
             clock.PauseGame();
             clock.SetTime(nextSwing);
             StartCoroutine(BasicAttackDelay());
-        }
+        }*/
     }
 
     public void SetEntity(Character play)
@@ -79,7 +80,8 @@ public class TurnManager : MonoBehaviour
         nextSwing += next;
     }
 
-    private IEnumerator BasicAttackDelay()
+    //old basic attack logic
+    /*private IEnumerator BasicAttackDelay()
     {
         //actual attack
         entity.BasicAttack();
@@ -87,7 +89,7 @@ public class TurnManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         //continue the game
         clock.ContGame();
-    }
+    }*/
 
     public void SetTurnInt(float val)
     {

@@ -28,6 +28,7 @@ public class Action : ScriptableObject
      */
 
     //some variables
+    protected GameObject owner; //owner of ability
     protected GameObject target; //target of the action
     protected float time; //duration of effect (0 = instant)
     protected Timer clock; //game timer 
@@ -40,6 +41,7 @@ public class Action : ScriptableObject
     }
 
     //assign target for instant ability
+    //@@@ do I need this?
     public void AssignTarget(GameObject targ)
     {
         target = targ;
@@ -52,6 +54,7 @@ public class Action : ScriptableObject
     }
 
     //assign target for ability with some sort of timer
+    //@@@ do I need this?
     public void AssignTarget(GameObject targ, float val)
     {
         target = targ;

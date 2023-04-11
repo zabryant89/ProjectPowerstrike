@@ -2,12 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class Player : Character
 {
     //stats - affects damage/healing/etcs
     private int power; //damage modifier
     private Enemy target; // enemy target? might need I think
+
+    //control
+    private GameObject menu; //control menu
+    private Button[] buttons; //buttons for the menu (max 6)
 
 
     // Start is called before the first frame update
@@ -22,6 +27,18 @@ public class Player : Character
         turnManager.SetNextTurn(turnInterval);
 
         power = 10;
+
+        menu = GameObject.Find("ButtonControls");
+        buttons = menu.GetComponentsInChildren<Button>();
+
+        buttons[0].GetComponentInChildren<TextMeshProUGUI>().text = "Offense";
+        buttons[1].GetComponentInChildren<TextMeshProUGUI>().text = "Defense";
+
+        for(int i = 0; i < buttons.Length; i++)
+        {
+            int buttonIndex = i;
+            buttons[i].onClick.AddListener(() => OnClickButton(buttonIndex));
+        }
     }
 
     // Update is called once per frame
@@ -41,7 +58,7 @@ public class Player : Character
 
             if (Input.GetKeyDown(KeyCode.B))
             {
-                DamageOverTime(6, 5, 0.75f, CalcSpeed(0.5f, turnInterval));
+                DamageOverTime(31, 5, 0.75f, CalcSpeed(0.5f, turnInterval));
             }
 
             if (Input.GetKeyDown(KeyCode.H))
@@ -51,7 +68,7 @@ public class Player : Character
 
             if (Input.GetKeyDown(KeyCode.J))
             {
-                HealOverTime(5, 5, 0.5f, CalcSpeed(0.5f, turnInterval));
+                HealOverTime(28, 5, 0.5f, CalcSpeed(0.5f, turnInterval));
             }
 
             if (Input.GetKeyDown(KeyCode.S))
@@ -61,16 +78,33 @@ public class Player : Character
         }
     }
 
+    void OnClickButton(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                if (turnManager.GetTurn())
+                {
+                    Attack(10, 0, CalcSpeed(1, turnInterval));
+                }
+                break;
+            case 1:
+                if (turnManager.GetTurn())
+                {
+                    Heal(15, 0, turnInterval);
+                }
+                break;
+        }       
+    }
+
     /* pass the base damage of the action and a bool if it is over time or not*/
-    override protected int CalcDamage(int baseline, bool overtime, bool basic)
+    override protected int CalcDamage(int baseline, bool overtime)
     {
         int final;
         if (overtime)
             final = baseline + power / 4; //over time effects will need less impact
-        else if (!basic)
-            final = baseline + power; //normal attacks
         else
-            final = baseline + (int)(power * (basAtkInt / 5)); //basic attack
+            final = baseline + power; //normal attacks
         
         return final;
     }
@@ -83,40 +117,48 @@ public class Player : Character
         return final;
     }
 
-    override public void BasicAttack()
+    /*override public void BasicAttack()
     {
-        attack = ScriptableObject.CreateInstance<Damage>();
-        attack.ScheduleDamage(CalcDamage(power, false, true), 0, GameObject.Find("Enemy"));
+        //must have the CalcDamage be negative, assign negatives here
+        changeHP = ScriptableObject.CreateInstance<ChangeHealth>();
+        //@@@ replace first 0 with: -CalcDamage(power, false, true)
+        changeHP.ScheduleChange(0, 0, GameObject.Find("Enemy"), this.gameObject);
         turnManager.SetBasicAttack(basAtkInt);
-    }
+    }*/
 
     override protected void Attack(int dmg, float interval, float nextTurn)
     {
 
-        attack = ScriptableObject.CreateInstance<Damage>();
-        attack.ScheduleDamage(dmg, interval, GameObject.Find("Enemy"));
+        changeHP = ScriptableObject.CreateInstance<ChangeHealth>();
+        changeHP.ScheduleChange(-dmg, interval, GameObject.Find("Enemy"), this.gameObject);
         EndTurn(nextTurn);
     }
 
     override protected void DamageOverTime(int dmgPer, int ts, float interval, float nextTurn)
     {
-        dot = ScriptableObject.CreateInstance<DamageOverTime>();
-        dot.ScheduleDamage(dmgPer, ts, interval, GameObject.Find("Enemy"));
+        changeHPOT = ScriptableObject.CreateInstance<ChangeHealthOverTime>();
+        changeHPOT.ScheduleChange(-dmgPer, ts, interval, GameObject.Find("Enemy"), this.gameObject);
         EndTurn(nextTurn);
+        /*dot = ScriptableObject.CreateInstance<DamageOverTime>();
+        dot.ScheduleDamage(dmgPer, ts, interval, GameObject.Find("Enemy"));
+        EndTurn(nextTurn);*/
     }
 
     override protected void Heal(int amt, float interval, float nextTurn)
     {
-        heal = ScriptableObject.CreateInstance<Heal>();
-        heal.ScheduleHeal(amt, interval, this.gameObject);
+        changeHP = ScriptableObject.CreateInstance<ChangeHealth>();
+        changeHP.ScheduleChange(amt, interval, this.gameObject, this.gameObject);
         EndTurn(nextTurn);
     }
 
     override protected void HealOverTime(int amt, int ts, float interval, float nextTurn)
     {
-        hot = ScriptableObject.CreateInstance<HealOverTime>();
-        hot.ScheduleHeal(amt, ts, interval, this.gameObject);
+        changeHPOT = ScriptableObject.CreateInstance<ChangeHealthOverTime>();
+        changeHPOT.ScheduleChange(amt, ts, interval, this.gameObject, this.gameObject);
         EndTurn(nextTurn);
+        /*hot = ScriptableObject.CreateInstance<HealOverTime>();
+        hot.ScheduleHeal(amt, ts, interval, this.gameObject);
+        EndTurn(nextTurn);*/
     }
 
     override public void StunMe(float stunTime)

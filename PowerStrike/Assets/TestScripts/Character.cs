@@ -11,6 +11,8 @@ abstract public class Character : MonoBehaviour
     protected TurnManager turnManager; //local turn manager script just for this object
 
     //action variables
+    protected ChangeHealth changeHP; //@@@ replacing damage/heal values, need to remove old stuff
+    protected ChangeHealthOverTime changeHPOT; //@@@ replacing dot/hot values, need to remove old stuff
     protected Damage attack; //basic attack
     protected float basAtkInt; //basic attack interval - will be determined by weapon, but here for now!
     protected DamageOverTime dot; //bleed attack
@@ -19,11 +21,12 @@ abstract public class Character : MonoBehaviour
     protected Stun stun; //to stun stuff
 
     /* pass the base damage of the action and a bool if it is over time or not*/
-    abstract protected int CalcDamage(int baseline, bool overtime, bool basic);
+    abstract protected int CalcDamage(int baseline, bool overtime);
 
     abstract protected float CalcSpeed(float modifier, float abilitySpeed);
 
-    abstract public void BasicAttack();
+    //do i really need a basic attack? No I found my testing more fun without it.
+    //abstract public void BasicAttack();
 
     abstract protected void Attack(int dmg, float interval, float nextTurn);
 
