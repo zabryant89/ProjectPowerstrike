@@ -43,11 +43,11 @@ public class Timer : MonoBehaviour
             futureTime = curTime + 10f;
         }
 
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.P))
         {
             PauseGame();
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKeyDown(KeyCode.O))
         {
             ContGame();
         }

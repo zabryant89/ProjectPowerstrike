@@ -38,7 +38,7 @@ abstract public class Character : MonoBehaviour
 
     abstract public void StunMe(float stunTime);
 
-    abstract protected void StunTarget(float stunTime);
+    abstract protected void StunTarget(float stunTime, float nextTurn);
 
     abstract protected void EndTurn(float next);
 }

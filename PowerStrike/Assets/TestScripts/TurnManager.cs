@@ -22,27 +22,23 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetTurn(false);
-        scheduled = false;
+        SetTurn(false, false);
+        //scheduled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (clock.GetTime() >= nextTurn)
+        if (scheduled && nextTurn != 0 && clock.GetTime() >= nextTurn)
         {
             clock.PauseGame();
             clock.SetTime(nextTurn);
-            SetTurn(true);
+            SetTurn(true, true);
         }
-
-        //old basic attack logic
-        /*if (clock.GetTime() >= nextSwing)
+        else
         {
-            clock.PauseGame();
-            clock.SetTime(nextSwing);
-            StartCoroutine(BasicAttackDelay());
-        }*/
+            Debug.Log("Scheduled bool at time " + clock.GetTime() + " --> " + scheduled);
+        }
     }
 
     public void SetEntity(Character play)
@@ -50,9 +46,12 @@ public class TurnManager : MonoBehaviour
         entity = play;
     }
 
-    public void SetTurn(bool val)
+    public void SetTurn(bool val, bool turnStart)
     {
         turn = val;
+
+        if (turnStart)
+            scheduled = false;
 
         if (this.gameObject.name == "Player")
             clock.SetPlayer(val);
@@ -61,11 +60,12 @@ public class TurnManager : MonoBehaviour
     }
 
     //passing a value here as some things may change speed
-    public void SetNextTurn(float next)
+    public void SetNextTurn(float next, bool crowdControl)
     {
-        if (scheduled)
+        if (next == 0)
         {
-            nextTurn += next;
+            nextTurn = next;
+            scheduled = false;
         }
         else
         {
@@ -79,17 +79,6 @@ public class TurnManager : MonoBehaviour
     {
         nextSwing += next;
     }
-
-    //old basic attack logic
-    /*private IEnumerator BasicAttackDelay()
-    {
-        //actual attack
-        entity.BasicAttack();
-        //delay to show attack occurrence
-        yield return new WaitForSeconds(1.5f);
-        //continue the game
-        clock.ContGame();
-    }*/
 
     public void SetTurnInt(float val)
     {

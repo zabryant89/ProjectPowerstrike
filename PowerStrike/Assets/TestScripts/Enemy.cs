@@ -21,14 +21,14 @@ public class Enemy : Character
     void Start()
     {
         //@@@ debug: turn below on if you need to disable AI actions
-        skip = true;
+        //skip = true;
         basAtkInt = 1.8f;
 
         turnManager = this.GetComponent<TurnManager>();
         turnManager.SetBasicAttack(basAtkInt);
         turnManager.SetEntity(this);
         turnManager.SetTurnInt(turnInterval);
-        turnManager.SetNextTurn(turnInterval);
+        turnManager.SetNextTurn(turnInterval, false);
         temp.gameObject.SetActive(false);
 
         power = 10;
@@ -63,25 +63,12 @@ public class Enemy : Character
         return final;
     }
 
-    /*override public void BasicAttack()
-    {
-        if (skip)
-        {
-            turnManager.SetBasicAttack(basAtkInt);
-            return;
-        }
-
-        changeHP = ScriptableObject.CreateInstance<ChangeHealth>();
-        changeHP.ScheduleChange(-CalcDamage(power, false, true), 0, GameObject.Find("Player"), this.gameObject);
-        turnManager.SetBasicAttack(basAtkInt);
-    }*/
-
     //simulates the NPC turn
     override protected void EndTurn(float next)
     {
         waiting = false;
-        turnManager.SetNextTurn(next);
-        turnManager.SetTurn(false);
+        turnManager.SetNextTurn(next, false);
+        turnManager.SetTurn(false, false);
         clock.ContGame();
         temp.gameObject.SetActive(false);
     }
@@ -100,11 +87,11 @@ public class Enemy : Character
         int decision;
 
         if (hp.GetCurrentHealth() >= hp.GetMaxHealth())
-            decision = Random.Range(0, 2);
+            decision = Random.Range(0, 3);
         else if (hp.GetCurrentHealth() > (int)(hp.GetMaxHealth() * 0.3))
-            decision = Random.Range(0, 4); //above 30% health, all options 
+            decision = Random.Range(0, 5); //above 30% health, all options 
         else
-            decision = Random.Range(2, 4); //lower than 30%, heal only
+            decision = Random.Range(3, 5); //lower than 30%, heal only
 
         if (skip)
         {
@@ -127,16 +114,22 @@ public class Enemy : Character
                 DamageOverTime(CalcDamage(52, true), 10, 0.75f, CalcSpeed(0.5f, turnInterval));
                 break;
             case 2:
-                //heal once
-                temp.text = "Decision made: heal";
+                //stun
+                temp.text = "Decision made: Stun!";
                 yield return new WaitForSeconds(time);
-                Heal(15, 0, CalcSpeed(1f, turnInterval));
+                StunTarget(1.5f, 2f);
                 break;
             case 3:
                 //heal over time
                 temp.text = "Decision made: heal over time";
                 yield return new WaitForSeconds(time);
                 HealOverTime(28, 5, 0.5f, CalcSpeed(0.5f, turnInterval));
+                break;
+            case 4:
+                //heal once
+                temp.text = "Decision made: heal";
+                yield return new WaitForSeconds(time);
+                Heal(15, 0, CalcSpeed(1f, turnInterval));
                 break;
         }
     }
@@ -145,10 +138,6 @@ public class Enemy : Character
     {
         changeHP = ScriptableObject.CreateInstance<ChangeHealth>();
         changeHP.ScheduleChange(-dmg, interval, GameObject.Find("Player"), this.gameObject);
-        //the below commented out code block WORKS in stunning the target.
-        /*GameObject player = GameObject.Find("Player");
-        Player pl = player.GetComponent<Player>();
-        pl.StunMe(1.0f);*/
         EndTurn(nextTurn);
     }
 
@@ -156,8 +145,6 @@ public class Enemy : Character
     {
         changeHPOT = ScriptableObject.CreateInstance<ChangeHealthOverTime>();
         changeHPOT.ScheduleChange(-dmg, ts, interval, GameObject.Find("Player"), this.gameObject);
-        /*dot = ScriptableObject.CreateInstance<DamageOverTime>();
-        dot.ScheduleDamage(dmg, ts, interval, GameObject.Find("Player"));*/
         EndTurn(nextTurn);
     }
 
@@ -165,8 +152,6 @@ public class Enemy : Character
     {
         changeHP = ScriptableObject.CreateInstance<ChangeHealth>();
         changeHP.ScheduleChange(amt, interval, this.gameObject, this.gameObject);
-        /*heal = ScriptableObject.CreateInstance<Heal>();
-        heal.ScheduleHeal(amt, interval, this.gameObject);*/
         EndTurn(nextTurn);
     }
 
@@ -174,19 +159,20 @@ public class Enemy : Character
     {
         changeHPOT = ScriptableObject.CreateInstance<ChangeHealthOverTime>();
         changeHPOT.ScheduleChange(amt, ts, interval, this.gameObject, this.gameObject);
-        /*hot = ScriptableObject.CreateInstance<HealOverTime>();
-        hot.ScheduleHeal(amt, ts, interval, this.gameObject);*/
         EndTurn(nextTurn);
     }
 
     public override void StunMe(float stunTime)
     {
-        turnManager.SetNextTurn(stunTime);
+        turnManager.SetNextTurn(stunTime, true);
         turnManager.SetBasicAttack(stunTime);
     }
 
-    protected override void StunTarget(float stunTime)
+    protected override void StunTarget(float stunTime, float nextTurn)
     {
-        throw new System.NotImplementedException();
+        stun = ScriptableObject.CreateInstance<Stun>();
+        stun.ScheduleStun(stunTime, GameObject.Find("Player"));
+        EndTurn(nextTurn);
+        //throw new System.NotImplementedException();
     }
 }

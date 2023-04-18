@@ -10,6 +10,10 @@ public class Player : Character
     private int power; //damage modifier
     private Enemy target; // enemy target? might need I think
 
+    //spell variables
+    private bool casting; //tells us if you're casting or not, if you are... delays/interrupts
+    private float castTime; //this will change based on the spell, but for now a single variable should cover it
+
     //control
     private GameObject menu; //control menu
     private Button[] buttons; //buttons for the menu (max 6)
@@ -24,7 +28,7 @@ public class Player : Character
         turnManager.SetBasicAttack(basAtkInt);
         turnManager.SetEntity(this);
         turnManager.SetTurnInt(turnInterval);
-        turnManager.SetNextTurn(turnInterval);
+        turnManager.SetNextTurn(turnInterval, false);
 
         power = 10;
 
@@ -44,6 +48,10 @@ public class Player : Character
     // Update is called once per frame
     void Update()
     {
+        if (casting && clock.GetTime() >= castTime)
+        {
+
+        }
         if (turnManager.GetTurn())
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -73,7 +81,7 @@ public class Player : Character
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                StunTarget(1f); //why no work in regular game but work in debug?
+                StunTarget(1f, 2f); //why no work in regular game but work in debug?
             }
         }
     }
@@ -117,15 +125,6 @@ public class Player : Character
         return final;
     }
 
-    /*override public void BasicAttack()
-    {
-        //must have the CalcDamage be negative, assign negatives here
-        changeHP = ScriptableObject.CreateInstance<ChangeHealth>();
-        //@@@ replace first 0 with: -CalcDamage(power, false, true)
-        changeHP.ScheduleChange(0, 0, GameObject.Find("Enemy"), this.gameObject);
-        turnManager.SetBasicAttack(basAtkInt);
-    }*/
-
     override protected void Attack(int dmg, float interval, float nextTurn)
     {
 
@@ -139,9 +138,6 @@ public class Player : Character
         changeHPOT = ScriptableObject.CreateInstance<ChangeHealthOverTime>();
         changeHPOT.ScheduleChange(-dmgPer, ts, interval, GameObject.Find("Enemy"), this.gameObject);
         EndTurn(nextTurn);
-        /*dot = ScriptableObject.CreateInstance<DamageOverTime>();
-        dot.ScheduleDamage(dmgPer, ts, interval, GameObject.Find("Enemy"));
-        EndTurn(nextTurn);*/
     }
 
     override protected void Heal(int amt, float interval, float nextTurn)
@@ -156,27 +152,36 @@ public class Player : Character
         changeHPOT = ScriptableObject.CreateInstance<ChangeHealthOverTime>();
         changeHPOT.ScheduleChange(amt, ts, interval, this.gameObject, this.gameObject);
         EndTurn(nextTurn);
-        /*hot = ScriptableObject.CreateInstance<HealOverTime>();
-        hot.ScheduleHeal(amt, ts, interval, this.gameObject);
-        EndTurn(nextTurn);*/
     }
 
     override public void StunMe(float stunTime)
     {
-        turnManager.SetNextTurn(stunTime);
+        turnManager.SetNextTurn(stunTime, true);
         turnManager.SetBasicAttack(stunTime);
     }
 
-    override protected void StunTarget(float stunTime)
+    override protected void StunTarget(float stunTime, float nextTurn)
     {
-        GameObject targ = GameObject.Find("Enemy");
-        stun.ScheduleStun(stunTime, targ);
+        stun = ScriptableObject.CreateInstance<Stun>();
+        stun.ScheduleStun(stunTime, GameObject.Find("Enemy"));
+        EndTurn(nextTurn);
     }
 
     override protected void EndTurn(float next)
     {
-        turnManager.SetNextTurn(next);
-        turnManager.SetTurn(false);
+        turnManager.SetNextTurn(next, false);
+        turnManager.SetTurn(false, false);
         clock.ContGame();
+    }
+
+    //testing SPELLS BABY!
+    //spellcasting stuff
+    //spells need to just let go of setting next turn until the cast is complete (that is when it will actually set the next turn)
+    //      this is intentional, as they will be strong
+    //how to handle that? nextTurn will be set to 0.  Add a function in the turnManager that handles this
+    protected void StartCasting(float time, int damage)
+    {
+        casting = true;
+        castTime = clock.GetTime() + time;
     }
 }

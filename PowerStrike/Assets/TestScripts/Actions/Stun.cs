@@ -8,30 +8,31 @@ public class Stun : Action
 
     public void ScheduleStun(float val, GameObject targ)
     {
+        Debug.Log("Assigning stun values");
         stunTime = val;
-        AssignTarget(targ);
+        target = targ;
 
-        if (val == 0)
-        {
-            time = clock.GetTime();
-            queue.AddAction(this);
-        }
-        else
-        {
-            time = clock.GetTime() + val;
-            queue.AddAction(this);
-        }
+        Debug.Log("Values assigned");
+
+        //I found my problem... VAL
+        time = clock.GetTime() + 0.02f;
+        queue.AddAction(this);
+
+        Debug.Log("Stun Scheduled!");
     }
 
     public override void DoAction()
     {
+        Debug.Log("Determining target for stun");
         if (target.name == "Player")
         {
+            Debug.Log("Player chosen for stun");
             Player targ = target.GetComponent<Player>();
             targ.StunMe(stunTime);
         }
         else
         {
+            Debug.Log("Enemy chosen for stun");
             Enemy targ = target.GetComponent<Enemy>();
             targ.StunMe(stunTime);
         }

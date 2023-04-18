@@ -139,6 +139,7 @@ public class ActionQueue : MonoBehaviour
         }
 
         //FINAL NOTE: I considered a while loop here but decided against it after a couple of tests did reveal situations where null values would enter the list with gaps between active actions.
+        //ADDENDUM: @@@ I will use a while loop.  inside do an if.  If null, remove and continue, else increment i.  more efficient and cleaner code, also uses the loop properly
     }
 
     //old code for debugging, ignore
