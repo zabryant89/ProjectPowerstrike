@@ -24,7 +24,12 @@ public class Stun : Action
     public override void DoAction()
     {
         Debug.Log("Determining target for stun");
-        if (target.name == "Player")
+
+        Character targ = target.GetComponent<Character>();
+
+        targ.StunMe(stunTime);
+
+        /*if (target.name == "Player")
         {
             Debug.Log("Player chosen for stun");
             Player targ = target.GetComponent<Player>();
@@ -35,6 +40,6 @@ public class Stun : Action
             Debug.Log("Enemy chosen for stun");
             Enemy targ = target.GetComponent<Enemy>();
             targ.StunMe(stunTime);
-        }
+        }*/
     }
 }

@@ -175,4 +175,21 @@ public class Enemy : Character
         EndTurn(nextTurn);
         //throw new System.NotImplementedException();
     }
+
+    override public void SetSlow(float timer, bool val)
+    {
+        //set slow boolean
+        slowed = val;
+
+        //set timer
+        slowTime += timer; //slows can be extended!
+
+        //modify current turn timer in turnManager
+        turnManager.SetNextTurn(0f, true); //0 because we aren't adding time, we simply want to extend current time!
+    }
+
+    protected override void SlowTarget(float time)
+    {
+        throw new System.NotImplementedException();
+    }
 }

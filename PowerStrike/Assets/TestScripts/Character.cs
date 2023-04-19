@@ -19,6 +19,9 @@ abstract public class Character : MonoBehaviour
     protected Heal heal; //healing
     protected HealOverTime hot; //heal over time
     protected Stun stun; //to stun stuff
+    protected Slow slow; //to slow the target down
+    protected bool slowed; //to trigger the slow
+    protected float slowTime; //timer to slow down by
 
     /* pass the base damage of the action and a bool if it is over time or not*/
     abstract protected int CalcDamage(int baseline, bool overtime);
@@ -39,6 +42,10 @@ abstract public class Character : MonoBehaviour
     abstract public void StunMe(float stunTime);
 
     abstract protected void StunTarget(float stunTime, float nextTurn);
+
+    abstract public void SetSlow(float timer, bool val);
+
+    abstract protected void SlowTarget(float time); //@@@ need to figure out the parameters to this... nothing? NO slow time!
 
     abstract protected void EndTurn(float next);
 }

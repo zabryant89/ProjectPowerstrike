@@ -52,6 +52,11 @@ public class Player : Character
         {
 
         }
+
+        if (slowed){
+            slowTime -= Time.deltaTime;
+        }
+
         if (turnManager.GetTurn())
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -165,6 +170,23 @@ public class Player : Character
         stun = ScriptableObject.CreateInstance<Stun>();
         stun.ScheduleStun(stunTime, GameObject.Find("Enemy"));
         EndTurn(nextTurn);
+    }
+
+    override public void SetSlow(float timer, bool val)
+    {
+        //set slow boolean
+        slowed = val;
+
+        //set timer
+        slowTime += timer; //slows can be extended!
+
+        //modify current turn timer in turnManager
+        turnManager.SetNextTurn(0f, true); //0 because we aren't adding time, we simply want to extend current time!
+    }
+
+    protected override void SlowTarget(float time)
+    {
+        throw new System.NotImplementedException();
     }
 
     override protected void EndTurn(float next)

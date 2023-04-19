@@ -60,9 +60,9 @@ public class TurnManager : MonoBehaviour
     }
 
     //passing a value here as some things may change speed
-    public void SetNextTurn(float next, bool crowdControl)
+    public void SetNextTurn(float next, bool slow)
     {
-        if (next == 0)
+        if (next == 0 && !slow)
         {
             nextTurn = next;
             scheduled = false;
@@ -71,6 +71,11 @@ public class TurnManager : MonoBehaviour
         {
             nextTurn += next;
             scheduled = true;
+        }
+
+        if (slow)
+        {
+            nextTurn += (nextTurn - clock.GetTime()) * 1.3f;
         }
     }
 
